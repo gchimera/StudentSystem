@@ -1,14 +1,37 @@
-from random import randint
 import csv
-import os
 import datetime
+
+
+def writer(header, data, filename, option):
+    with open(filename, "w") as csvfile:
+        if option == "write":
+
+            movies = csv.writer(csvfile)
+          #  movies.writerow(header)
+            for x in data:
+                movies.writerow(x)
+        # elif option == "update":
+        #     writer = csv.DictWriter(csvfile)
+        #     writer.writeheader()
+        #     writer.writerows(data)
+        # else:
+        #     print("Option is not known")
+
 
 class StudentOptions:
     VALID_LENGTH = 7
     newID = ""
 
-    def __init__(self, studentid):
-        self.newID = studentid
+    def __init__(self):
+        print("Initializzation...")
+
+        filename = "students.csv"
+        header = ("StudentID", "Fullname", "DOB", "Password", "Test", "Average")
+        data = [
+            ("X870052", "Lee Alwan", "31/05/1983", "Empty", 3, 10),
+            ("X012253", "Mpiana Utchinga", "31/05/1983", "Empty", 1, 20),
+        ]
+        writer(header, data, filename, "write")
 
     @staticmethod
     def menu():
@@ -28,21 +51,23 @@ class StudentOptions:
         ]
 
         for x in menu_fields:
-            print(x + "\n")
+            print x + "\n"
 
     @staticmethod
     def validate_id():
+        StudentOptions.newID = str(raw_input("Type student ID: "))
+        print(len(StudentOptions.newID))
         if len(StudentOptions.newID) == StudentOptions.VALID_LENGTH:
-            print("new student ID: " + StudentOptions.newID)
+            print "new student ID: " + StudentOptions.newID
             return "new student ID: " + str(StudentOptions.newID)
         else:
-            print("wrong student ID format: " + StudentOptions.newID)
-            return ""
+            print "wrong student ID format: " + StudentOptions.newID
+            return StudentOptions.validate_id()
 
     @staticmethod
     def addStudentName():
         studenName = input("Type student name ")
-        print("Studentname: " + studenName)
+        print "Studentname: " + studenName
         return studenName
 
     @staticmethod
@@ -60,19 +85,21 @@ class StudentOptions:
 
         if dob_before_now:
 
-            print("Student date of birthday: " + str(dob))
+            print "Student date of birthday: " + str(dob)
             return dob
         else:
-            print("Incorrect format date")
+            print "Incorrect format date"
+            return StudentOptions.addStudentName()
 
     @staticmethod
     def addTest():
         score = input("Type test score ")
         if 0 < score < 4:
-            print("Test score: " + str(score))
+            print "Test score: " + str(score)
             return score
         else:
-            print("Incorrect test score")
+            print "Incorrect test score"
+        return StudentOptions.addTest()
 
     @staticmethod
     def calculateAverage():
@@ -81,31 +108,66 @@ class StudentOptions:
         sum = 0
 
         with open('students.csv') as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=';')
+            csv_reader = csv.reader(csv_file)
             for lines in csv_reader:
-                print(lines[5])
                 sum += int(lines[5])
                 index += 1
 
-        average = str(sum/index)
-        print(str(average))
+        average = str(sum / index)
+        print "The average of the students is: " + str(average)
+
+    @staticmethod
+    def highest_student():
+
+        # Calculate the highest student average
+        average = []
+
+        with open('students.csv') as csv_file:
+            csv_reader = csv.reader(csv_file)
+            for lines in csv_reader:
+                average.append(int(lines[5]))
+
+                highest = max(average)
+
+        # Get related student who match with the 'highest' value
+        with open("students.csv", "r") as f:
+            reader = csv.reader(f)
+            print("The best student average is: ")
+            print(filter(lambda x: x[5] in (str(highest)), list(reader)))
 
     @staticmethod
     def generate_password():
-            newPassword = []
-            # The first character of the new password should be the last digit in the ID
-            lastChar = StudentOptions.newID[6]
-            print (lastChar)
+        newPassword = []
+        # The first character of the new password should be the last digit in the ID
+        lastChar = StudentOptions.newID[6]
+        firstChar = StudentOptions.newID[0]
+        print ("lastChar" + lastChar)
 
-            for othersdigits in StudentOptions.newID:
-                #skip last char
-                if othersdigits != lastChar:
-                    print(othersdigits)
-                    next = abs(othersdigits*lastChar)
-                    print(next)
-                    newPassword.append(next)
+        for currentdigit in StudentOptions.newID:
+            # skip last char
+            if currentdigit.isdigit():
+                othersint = int(currentdigit)
+                lastCharint = int(lastChar)
+                next = abs(othersint * lastCharint)
+                print(next)
+                newPassword.append(next)
 
-            print("newPassword: " + newPassword)
+        # converting 'newPassword' list of integers into a single integer
+        strings = [str(integer) for integer in newPassword]
+        a_string = "".join(strings) + firstChar
 
+        print("newPassword: " + a_string)
 
+    @staticmethod
+    def change_password():
+        with open("students.csv", "r") as f:
+            reader = csv.reader(f)
+            studentID = raw_input("Type student ID to get the details: ")
+            with open("students.csv", "r") as f:
+                reader = csv.reader(f)
+                student = filter(lambda x: x[0] in (studentID), list(reader))
+                print("His/Her current password is: " + student[0][3])  # get the password
+                newpassword = raw_input("Type a new password to replace: ")
+                student[0][3] = newpassword  # replace password
+                print("New password: " + student[0][3])  # get the password
 
