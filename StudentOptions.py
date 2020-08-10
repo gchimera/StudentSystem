@@ -28,8 +28,8 @@ class StudentOptions:
         filename = "students.csv"
         header = ("StudentID", "Fullname", "DOB", "Password", "Test", "Average")
         data = [
-            ("X870052", "Lee Alwan", "31/05/1983", "Empty", 3, 10),
-            ("X012253", "Mpiana Utchinga", "31/05/1983", "Empty", 1, 20),
+            ("X870052", "Lee Alwan", "1983-05-31", "Empty", 3, 45),
+            ("X012253", "Mpiana Utchinga", "1982-04-22", "Empty", 1, 66),
         ]
         writer(header, data, filename, "write")
 
@@ -41,7 +41,7 @@ class StudentOptions:
             "************************ \n",
             "* 1) Add A Student     * \n",
             "* 2) List all Students     * \n",
-            "* 3) View A Student's Details     * \n",
+            "* 3) View a Student's Details     * \n",
             "* 4) Calculate Overall Average    * \n",
             "* 5) View highest scoring student * \n",
             "* 6) Change Password     * \n",
@@ -167,16 +167,29 @@ class StudentOptions:
 
     @staticmethod
     def change_password():
+        newlist = []
         with open("students.csv", "r") as f:
             reader = csv.reader(f)
+
+            for row in reader:
+                print(row)
+                newlist.append(row)
+
             studentID = raw_input("Type student ID to get the details: ")
-            with open("students.csv", "r") as f:
-                reader = csv.reader(f)
-                student = filter(lambda x: x[0] in (studentID), list(reader))
-                print("His/Her current password is: " + student[0][3])  # get the password
-                newpassword = raw_input("Type a new password to replace: ")
-                student[0][3] = newpassword  # replace password
-                print("New password: " + student[0][3])  # get the password
+            student = filter(lambda x: x[0] in studentID, list(newlist))
+            print("Current student password is: " + student[0][3])  # get the password
+            newpassword = raw_input("Type a new password to replace: ")
+            student[0][3] = newpassword  # replace password
+            print("New password: " + student[0][3])  # get the password
+
+
+            for row in newlist:
+                print(row)
+
+            # update record
+            writer = csv.writer(open('students.csv', 'w'))
+            writer.writerows(newlist)
+
 
     @staticmethod
     def appendToCSV(studentID, fullname, dob, password, score, average):
