@@ -43,6 +43,10 @@ def menu():
         return menu()
 
     elif n == 7:
+        vast.create_dictionary()
+        return menu()
+
+    elif n == 8:
         exit()
 
 

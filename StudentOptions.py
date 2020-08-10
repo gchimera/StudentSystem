@@ -23,7 +23,7 @@ class StudentOptions:
     newID = ""
 
     def __init__(self):
-        print("Initializzation...")
+        print("Generating csv...")
 
         filename = "students.csv"
         header = ("StudentID", "Fullname", "DOB", "Password", "Test", "Average")
@@ -36,8 +36,8 @@ class StudentOptions:
     @staticmethod
     def menu():
         menu_fields = [
-            '************************ \n',
-            "* Student System * \n",
+            '************************',
+            "* Student System * ",
             "************************ \n",
             "* 1) Add A Student     * \n",
             "* 2) List all Students     * \n",
@@ -171,6 +171,7 @@ class StudentOptions:
         with open("students.csv", "r") as f:
             reader = csv.reader(f)
 
+            # merge records into a list
             for row in reader:
                 print(row)
                 newlist.append(row)
@@ -190,6 +191,21 @@ class StudentOptions:
             writer = csv.writer(open('students.csv', 'w'))
             writer.writerows(newlist)
 
+    @staticmethod
+    def create_dictionary():
+
+        averages = {}
+
+        with open("students.csv", "r") as f:
+            reader = csv.reader(f)
+
+            # merge records into a list
+            for row in reader:
+                averages[row[0]] = row[5]
+
+        print("StudentID - Averages: ")
+        for x, y in averages.items():
+            print(x, y)
 
     @staticmethod
     def appendToCSV(studentID, fullname, dob, password, score, average):
