@@ -1,6 +1,8 @@
 import csv
 
 from StudentOptions import StudentOptions
+from sys import exit
+
 
 vast = StudentOptions()
 vast.menu()
@@ -16,8 +18,7 @@ def read_csv(f, cols):
 
 
 if n == 1:
-    vast.validate_id()
-    vast.generate_password()
+    vast.appendToCSV(vast.validate_id(),vast.addStudentName(),vast.addStudentDOB(),vast.generate_password(),"Empty","Empty")
 
 elif n == 2:
     with open('students.csv') as f:

@@ -55,41 +55,48 @@ class StudentOptions:
 
     @staticmethod
     def validate_id():
-        StudentOptions.newID = str(raw_input("Type student ID: "))
-        print(len(StudentOptions.newID))
+        StudentOptions.newID = str(raw_input("Type the 7 digits student ID: "))
         if len(StudentOptions.newID) == StudentOptions.VALID_LENGTH:
             print "new student ID: " + StudentOptions.newID
-            return "new student ID: " + str(StudentOptions.newID)
+            return str(StudentOptions.newID)
         else:
             print "wrong student ID format: " + StudentOptions.newID
             return StudentOptions.validate_id()
 
     @staticmethod
     def addStudentName():
-        studenName = input("Type student name ")
-        print "Studentname: " + studenName
+        studenName = raw_input("Type student name :")
+        print "Student name: " + studenName
         return studenName
 
     @staticmethod
     def addStudentDOB():
-        day = input("Type day ")
-        month = input("Type month ")
-        year = input("Type year ")
+        day = raw_input("Type day of birth (dd): ")
+        month = raw_input("Type month of birth (mm): ")
+        year = raw_input("Type year of birth (yyyy): ")
 
-        dob = datetime.date(year, month, day)
-        now = datetime.date(datetime.datetime.now().year,
-                            datetime.datetime.now().month,
-                            datetime.datetime.now().day)
+        if day.isdigit() and month.isdigit() and year.isdigit():
+            dob = datetime.date(int(year), int(month), int(day))
+            now = datetime.date(datetime.datetime.now().year,
+                                datetime.datetime.now().month,
+                                datetime.datetime.now().day)
 
-        dob_before_now = dob < now
+            dob_before_now = dob < now
 
-        if dob_before_now:
+            if dob_before_now:
 
-            print "Student date of birthday: " + str(dob)
-            return dob
+                print "Student date of birthday: " + str(dob)
+                return dob
+            else:
+                print "Incorrect format date"
+                return StudentOptions.addStudentDOB()
+
         else:
-            print "Incorrect format date"
-            return StudentOptions.addStudentName()
+            print "Wrong date format!"
+            StudentOptions.addStudentDOB()
+
+
+
 
     @staticmethod
     def addTest():
@@ -141,7 +148,6 @@ class StudentOptions:
         # The first character of the new password should be the last digit in the ID
         lastChar = StudentOptions.newID[6]
         firstChar = StudentOptions.newID[0]
-        print ("lastChar" + lastChar)
 
         for currentdigit in StudentOptions.newID:
             # skip last char
@@ -149,14 +155,15 @@ class StudentOptions:
                 othersint = int(currentdigit)
                 lastCharint = int(lastChar)
                 next = abs(othersint * lastCharint)
-                print(next)
                 newPassword.append(next)
 
         # converting 'newPassword' list of integers into a single integer
         strings = [str(integer) for integer in newPassword]
         a_string = "".join(strings) + firstChar
 
+        return a_string
         print("newPassword: " + a_string)
+
 
     @staticmethod
     def change_password():
@@ -171,3 +178,17 @@ class StudentOptions:
                 student[0][3] = newpassword  # replace password
                 print("New password: " + student[0][3])  # get the password
 
+    @staticmethod
+    def appendToCSV(studentID, fullname, dob, password, score, average):
+
+        toAdd = [studentID, fullname, dob, password, score, average]
+
+        with open("students.csv", "r") as infile:
+            reader = list(csv.reader(infile))
+            reader.append(toAdd)
+
+
+        with open("students.csv", "w") as outfile:
+            writer = csv.writer(outfile)
+            for line in reader:
+                writer.writerow(line)
